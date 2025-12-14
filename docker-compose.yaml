@@ -11,3 +11,20 @@ services:
     volumes:
 #      - ./database_data:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./docker/dockerfile
+    container_name: "backend"
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_USERNAME: todo-backend
+      DATABASE_PASSWORD: D2JPl0s36r0n
+      DATABASE_URL: postgresql://database:5432/master
+      QUARKUS_HTTP_CORS_ENABLED: true
+      QUARKUS_HTTP_CORS_ORIGINS: http://localhost:5173
+      QUARKUS_HTTP_CORS_METHODS: GET,POST,PATCH,DELETE
+    depends_on:
+      - database
