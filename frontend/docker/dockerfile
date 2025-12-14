@@ -1,0 +1,20 @@
+FROM alpine:3 AS final
+
+RUN apk add nodejs npm
+
+WORKDIR /deployments
+COPY index.html ./
+COPY src ./src
+COPY public ./
+COPY package.json ./
+COPY vite.config.ts ./
+COPY tsconfig.json ./
+
+ENV VITE_API_URL=http://localhost:8080
+
+RUN npm install
+RUN ls -la
+RUN npm run build
+RUN rm -r ./src
+
+CMD ["npm","run","preview"]
