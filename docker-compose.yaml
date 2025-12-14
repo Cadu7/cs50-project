@@ -1,0 +1,13 @@
+services:
+  database:
+    image: postgres:18
+    container_name: "database"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "D2JPl0s36r0n"
+      POSTGRES_USER: "todo-backend"
+      POSTGRES_DB: "master"
+    volumes:
+#      - ./database_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d

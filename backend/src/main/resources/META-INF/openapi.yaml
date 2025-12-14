@@ -1,0 +1,319 @@
+openapi: 3.0.3
+info:
+  title: Harvard To-Do API
+  description: |
+    API for managing **to-do lists**.
+    
+    Each list represents a group of tasks, and each task (item)
+    must belong to a list.
+    
+    The API allows:
+    - Creating, listing, updating, and deleting task lists
+    - Creating tasks within a list
+    - Listing tasks from a list
+    - Marking tasks as completed
+  version: 1.0.0
+
+servers:
+  - url: "{host}"
+    variables:
+      host:
+        default: http://localhost:8080
+
+tags:
+  - name: List
+    description: Operations related to task lists
+  - name: Item
+    description: Operations related to task items within a list
+
+paths:
+  /list:
+    get:
+      summary: List all task lists
+      description: Returns all registered task lists.
+      tags: [List]
+      responses:
+        "200":
+          description: List of task lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskList"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      summary: Create a new task list
+      description: Creates a new task list.
+      tags: [List]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskListRequest"
+      responses:
+        "201":
+          description: Task list created successfully
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /list/{id}:
+    patch:
+      summary: Update a task list
+      description: Updates the name of an existing task list.
+      tags: [List]
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskListRequest"
+      responses:
+        "200":
+          description: Task list updated successfully
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      summary: Delete a task list
+      description: Deletes a task list and all its associated items.
+      tags: [List]
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Task list deleted successfully
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /item:
+    post:
+      summary: Create a task item
+      description: |
+        Creates a new task associated with an existing task list.
+        
+        Each item must include the `taskListId`.
+      tags:
+        - Item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateItemRequest"
+      responses:
+        "201":
+          description: Task item created successfully
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /item/{id}:
+    get:
+      summary: List items by task list
+      description: Returns all tasks belonging to a specific task list.
+      tags:
+        - Item
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: List of task items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Item"
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    patch:
+      summary: Partially update a task item
+      description: |
+        Partially updates an existing task item.
+        
+        Only the provided fields will be updated.
+      tags:
+        - Item
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateItemRequest"
+      responses:
+        "204":
+          description: Task item updated successfully
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      summary: Delete a task item
+      description: Deletes a task item from a task list.
+      tags:
+        - Item
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Task item deleted successfully
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /item/complete/{id}:
+    patch:
+      summary: Complete a task item
+      description: Marks a task as completed.
+      tags:
+        - Item
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Task item completed successfully
+        "400":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "404":
+          $ref: "#/components/responses/BadRequestOrNotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequestOrNotFound:
+      description: Bad request or resource not found
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ErrorResponse"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    UpdateItemRequest:
+      type: object
+      description: Fields allowed for partial update of a task item.
+      properties:
+        content:
+          type: string
+        endDate:
+          type: string
+          format: date
+        priority:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Not found
+        details:
+          type: string
+          example: Task item not found for update
+
+    TaskList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    CreateTaskListRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    UpdateTaskListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        endDate:
+          type: string
+          format: date
+        priority:
+          type: integer
+        completed:
+          type: boolean
+
+    CreateItemRequest:
+      type: object
+      required: [taskListId, content, endDate, priority]
+      properties:
+        taskListId:
+          type: string
+          format: uuid
+        content:
+          type: string
+        endDate:
+          type: string
+          format: date
+        priority:
+          type: integer
