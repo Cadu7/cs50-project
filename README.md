@@ -49,20 +49,27 @@ Tasks are displayed within the month corresponding to their deadline, keeping th
 
 ---
 
-### Priority System
+### Priority and Deadline System
 
-Each task has a **priority level**, allowing users to quickly identify which activities require more attention.
+The **priority and deadline system** is a core part of the application’s design. Each task combines a defined deadline with a priority level, allowing users to manage not only *when* something must be done, but also *how important* it is.
 
-With this system, users can:
-- Set priorities when creating a task.
-- Change the priority at any time.
-- Visually distinguish more important or urgent tasks.
+Deadlines provide a clear temporal structure, ensuring tasks are associated with a specific month and preventing them from becoming forgotten or lost over time. Priorities add an additional layer of control, making it easy to identify urgent or critical tasks even when multiple deadlines exist within the same period.
 
-This helps users focus on what truly matters, especially when many tasks are spread across different months.
+This combination helps users make better decisions about what to focus on first, especially in scenarios where time and attention are limited.
 
 ---
 
-### Full Editing and Flexibility
+### Design Decision: Multiple Context-Based Lists
+
+One of the key design decisions in this project was implementing **multiple lists based on different contexts or subjects**, rather than a single global task list. This proved to be an effective and well-thought-out approach, as it mirrors how people naturally organize responsibilities in real life.
+
+Separating tasks by context (such as college, work, or personal matters) reduces cognitive overload and keeps related activities grouped together. This design choice improves clarity, scalability, and usability, allowing the application to grow with the user’s needs without becoming cluttered or confusing.
+
+The result is a system that feels natural, organized, and adaptable, making task management more efficient and enjoyable.
+
+---
+
+## Full Editing and Flexibility
 
 The application provides **full control over both lists and tasks**, allowing adjustments at any time as plans change.
 
@@ -74,3 +81,11 @@ Users can:
 - Edit or delete entire lists.
 
 This flexibility ensures the system adapts to the user’s routine, allowing tasks to be fully reorganized whenever necessary.
+
+---
+
+## Interface and Usability
+
+The interface was developed with a focus on **clarity and ease of use**. Subject lists are displayed separately, while months appear as columns, visually organizing tasks according to their deadlines.
+
+Each task is presented as a card containing its key information in a concise format. This visual structure makes it easier to understand the flow of tasks over time, even when many activities are registered.
